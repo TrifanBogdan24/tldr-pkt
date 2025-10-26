@@ -1,13 +1,21 @@
 use colored::Colorize;
-
+use std::env;
+use std::process::exit;
 
 fn pretty_print_cli_line(prompt: &str, command: &str) {
     println!("{} {}",
         prompt.yellow(),
         command.yellow().bold());
-
 }
 
+
+fn pretty_print_cli_line_with_comment(prompt: &str, command: &str, comment: &str) {
+    println!("{} {} {}",
+        prompt.yellow(),
+        command.yellow().bold(),
+        comment
+    );
+}
 
 fn pretty_print_comment(comment: &str) {
     println!("{}",
@@ -52,8 +60,8 @@ fn add_static_route() {
 
 }
 
-
-fn router_on_a_stick() {
+/// Router-on-a-Stick
+fn roas() {
     println!(
         "{} {} {}",
         "Configure".cyan().bold(),
@@ -98,6 +106,64 @@ fn router_on_a_stick() {
 
 
 
+}
+
+
+
+/// Generic Routing Encapsulation
+fn gre() {
+    println!("{} {} {}",
+        "Configure".cyan().bold(),
+        "GRE".green().bold(),
+        "(Generic Routing Encapsulation):".cyan().bold());
+    println!("On Router 0:");
+    println!("{} {}",
+        "STEP 1:".cyan().bold(), "Create virtual tunnel interface:");
+    pretty_print_cli_line("R0(config)", "[int|interface] tunnel <NR>");
+    println!("{} {}",
+        "STEP 2:".cyan().bold(),
+        "Assign tunnel IP and subnet:");
+    pretty_print_cli_line("R0(config-if)", "ip [a|addr|address] <TUNNEL_IP1> <TUNNEL_MASK>");
+    println!("{} {}",
+        "STEP 3:".cyan().bold(),
+        "Use local physical interface as tunnel source:");
+    pretty_print_cli_line("R0(config-if)", "tunnel source <INTERFACE_NAME>");
+    println!("{} {}",
+        "STEP 4:".cyan().bold(),
+        "Define remote router’s IP (physical interface) as tunnel destination:");
+    pretty_print_cli_line("R0(config-if)", "tunnel destination <IP of R1>");
+   
+    println!("On Router 1:");
+    println!("{} {}",
+        "STEP 1:".cyan().bold(),
+        "Create virtual tunnel interface:");
+    pretty_print_cli_line("R1(config)", "[int|interface] tunnel <NR>");
+    println!("{} {}",
+        "STEP 2:".cyan().bold(),
+        "Assign tunnel IP and subnet:");
+    pretty_print_cli_line("R1(config-if)", "ip [a|addr|address] <TUNNEL_IP2> <TUNNEL_MASK>");
+    println!("{} {}",
+        "STEP 3:".cyan().bold(),
+        "Use local physical interface as tunnel source:");
+    pretty_print_cli_line("R1(config-if)", "tunnel source <INTERFACE_NAME>");
+    println!("{} {}",
+        "STEP 4:".cyan().bold(),
+        "Define remote router’s IP (physical interface) as tunnel destination:");
+    pretty_print_cli_line("R1(config-if)", "tunnel destination <IP of R0>");
+    println!();
+   
+    println!("Example:");
+    println!("On Router 0:");
+    pretty_print_cli_line_with_comment("R0(config)", "interface tunnel 1", "                    ! Create GRE tunnel");
+    pretty_print_cli_line_with_comment("R0(config-if)", "ip address 50.50.50.1 255.255.255.0", "! Assign 1st IP on tunnel endpoint");
+    pretty_print_cli_line_with_comment("R0(config-if)", "tunnel source FastEthernet 0/0", "     ! Local interface");
+    pretty_print_cli_line_with_comment("R0(config-if)", "tunnel destination 20.0.0.1", "        ! Remote (physical) IP");
+    println!("On Router 1:");
+    pretty_print_cli_line_with_comment("R1(config)", "interface tunnel 1", "                    ! Create GRE tunnel");
+    pretty_print_cli_line_with_comment("R1(config-if)", "ip address 50.50.50.2 255.255.255.0", "! Assign 2nd IP on tunnel endpoint");
+    pretty_print_cli_line_with_comment("R1(config-if)", "tunnel source FastEthernet 0/0", "     ! Local interface");
+    pretty_print_cli_line_with_comment("R1(config-if)", "tunnel destination 10.0.0.1", "        ! Remote (physical) IP");
+    println!("Learn more here: https://ipcisco.com/lesson/gre-tunnel-configuration-with-cisco-packet-tracer/");
 }
 
 
@@ -158,12 +224,198 @@ fn router() {
     add_default_gateway();
     println!();
 
-    router_on_a_stick();
+    roas();  // Router-on-a-Stick
+    gre();   // Generic Routing Encapsulation
 }
 
 
-fn switch() {
 
+fn add_vlan() {
+    pretty_print_comment("Add VLAN:");
+    pretty_print_cli_line("Switch(config)#", "vlan <ID>");
+    pretty_print_cli_line("Switch(config-vlan)#", "exit");
+    pretty_print_cli_line("Switch(config)#", "");
+    println!("Example:");
+    pretty_print_cli_line("Switch(config)#", "vlan 10");
+    pretty_print_cli_line("Switch(config-vlan)#", "exit");
+
+}
+
+
+fn show_vlan() {
+    pretty_print("", "Switch#", "[sh|show] vlan");
+    println!("\
+        VLAN Name                             Status    Ports \n\
+        ---- -------------------------------- --------- -------------------------------\n
+        1    default                          active    Fa0/1, Fa1/1, Fa2/1, Fa3/1\n\
+                                                        Fa4/1, Fa5/1\n\
+        10   VLAN0010                         active    \n\
+        1002 fddi-default                     active    \n\
+        1003 token-ring-default               active    \n\
+        1004 fddinet-default                  active    \n\
+        1005 trnet-default                    active    \n\
+        \n\
+        VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2\n\
+        ---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------\n\
+        1    enet  100001     1500  -      -      -        -    -        0      0\n\
+        10   enet  100010     1500  -      -      -        -    -        0      0\n\
+        1002 fddi  101002     1500  -      -      -        -    -        0      0\n\
+        1003 tr    101003     1500  -      -      -        -    -        0      0\n\
+        1004 fdnet 101004     1500  -      -      -        ieee -        0      0\n\
+        1005 trnet 101005     1500  -      -      -        ibm  -        0      0\n\
+        \n\
+        VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2\n\
+        ---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------\n\
+        \n\
+        Remote SPAN VLANs\n\
+        ------------------------------------------------------------------------------\n\
+        \n\
+        Primary Secondary Type              Ports\n\
+        ------- --------- ----------------- ------------------------------------------\n\
+    ");
+
+
+
+}
+
+
+fn show_vlan_brief() {
+    pretty_print("", "Switch#", "[sh|show] vlan [br|brief]");
+    println!("\
+        VLAN Name                             Status    Ports\n\
+        ---- -------------------------------- --------- -------------------------------\n\
+        1    default                          active    Fa0/1, Fa1/1, Fa2/1, Fa3/1\n\
+                                                        Fa4/1, Fa5/1\n\
+        10   VLAN0010                         active    \n\
+        1002 fddi-default                     active    \n\
+        1003 token-ring-default               active    \n\
+        1004 fddinet-default                  active    \n\
+        1005 trnet-default                    active \n\
+    ");
+}
+
+
+
+
+fn config_access_port() {
+    pretty_print_cli_line("Switch(config)#", "Switch(config)# [int|inter|interface] <interface name>");
+    pretty_print_comment("Set port type (access/trunk):");
+    pretty_print_cli_line("Switch(config-if)#", "switchport mode access");
+    pretty_print_comment("Set VLAN ID:");
+    pretty_print_cli_line("Switch(config-if)#", "switchport access vlan <VLAN-ID>");
+    println!("Example:");
+    pretty_print_cli_line("Switch(config-if)#", "switchport access vlan 10");
+    println!();
+    println!("\
+        NOTE: Without the first command `switchport mode access`, the port will stay in dynamic desirable mode, meaning:\n\
+        - It may try to negociate a trunk port with a connected switch\n\
+        - and it may become a trunk port if the other device accepts\n\
+        \n\
+        As result, the config is unpredictable and not purely \"access\" port\n\
+    ")
+}
+
+
+
+fn config_trunk_port() {
+    pretty_print_cli_line("Switch#", "[sh|show] ip [int|interface] [br|brief]");
+    println!("\
+        Interface              IP-Address      OK? Method Status                Protocol\n\
+        FastEthernet0/1        unassigned      YES manual down                  down \n\
+        FastEthernet1/1        unassigned      YES manual down                  down \n\
+        FastEthernet2/1        unassigned      YES manual down                  down \n\
+        FastEthernet3/1        unassigned      YES manual down                  down \n\
+        Vlan1                  unassigned      YES manual administratively down down\n\
+    ");
+    pretty_print_cli_line("Switch#", "[conf|config] [t|term|terminal]");
+    pretty_print_cli_line("Switch(config)#", "Switch(config)# [int|inter|interface] <interface name>");
+    pretty_print_comment("Set port type (access/trunk):");
+    pretty_print_cli_line("Switch(config-if-range)#", "switchport mode trunk");
+    println!("NOTE: trunk VLAN must be configured at both ends of a link");
+}
+
+
+fn config_multiple_trunk_ports() {
+    pretty_print_cli_line("Switch#", "[sh|show] ip [int|interface] [br|brief]");
+    println!("\
+        Interface              IP-Address      OK? Method Status                Protocol\n\
+        FastEthernet0/1        unassigned      YES manual down                  down \n\
+        FastEthernet1/1        unassigned      YES manual down                  down \n\
+        FastEthernet2/1        unassigned      YES manual down                  down \n\
+        FastEthernet3/1        unassigned      YES manual down                  down \n\
+        Vlan1                  unassigned      YES manual administratively down down\n\
+    ");
+    pretty_print_cli_line("Switch#", "[conf|config] [t|term|terminal]");
+    pretty_print_cli_line("Switch(config)#", "Switch(config)# interface range fa0/1 - fa4/1");
+    pretty_print_comment("Set port type (access/trunk):");
+    pretty_print_cli_line("Switch(config-if-range)#", "switchport mode trunk");
+    println!("NOTE: trunk VLAN must be configured at both ends of a link");
+}
+
+fn config_native_vlan() {
+    pretty_print_comment("Configure native VLAN:");
+    pretty_print_cli_line("Switch(config)#", "[int|interface] <interface name>");
+    pretty_print_cli_line("Switch(config-if)#", "switchport trunk native vlan <ID>");
+    println!("Example:");
+    pretty_print_cli_line("Switch(config)#", "[int|interface] FastEthernet 0/1");
+    pretty_print_cli_line("Switch(config-if)#", "switchport trunk native vlan 30");
+
+    println!("NOTE:\n\
+        - A native VLAN is a placed on trunk line, so that line will remove 802.1Q of the specified VLAN\n\
+        - Native VLANs are deprecated (security vulnerability: double tagging; place a native VLAN that is not in VLAN's database)\n\
+        - The native (trunk) VLAN must be configured at both ends of a link\
+    ")
+}
+
+
+fn management_vlan_interface() {
+    pretty_print_comment("Create a separate ID for management VLAN:");
+    pretty_print_cli_line("Switch(config)#", "vlan <ID>");
+    pretty_print_cli_line("Switch(config-vlan)#", "exit");
+    pretty_print_cli_line("Switch(config)#", "");
+    pretty_print_comment("Assign IP address on management VLAN interface:");
+    pretty_print_cli_line("Switch(config)#", "interface vlan <ID>");
+    pretty_print_cli_line("Switch(config-if)#", "ip address <IP> <MASK>");
+    println!();
+    println!("Example:");
+    pretty_print_cli_line("Switch(config)#", "vlan 101");
+    pretty_print_cli_line("Switch(config-vlan)#", "exit");
+    pretty_print_cli_line("Switch(config)#", "interface vlan 101");
+    pretty_print_cli_line("Switch(config-if)#", "ip address 10.10.10.99 255.255.255.0");
+
+    println!();
+    println!(
+        "NOTE:\n\
+        - A switch can only have 1 management VLAN\n\
+        - The management VLAN has a virtual interface (not a physical one, like FastEthernet0/1)
+    ");
+
+}
+
+
+
+fn remove_vlan() {
+    pretty_print_comment("Remove a VLAN (by ID):");
+    pretty_print_cli_line("Switch(config)#", "no vlan <ID>");
+    println!("Example:");
+    pretty_print_cli_line("Switch(config)#", "no vlan 10");
+}
+
+
+
+
+
+
+fn switch() {
+    add_vlan();
+    show_vlan();
+    show_vlan_brief();
+    config_access_port();
+    config_trunk_port();
+    config_multiple_trunk_ports();
+    config_native_vlan();
+    management_vlan_interface();
+    remove_vlan();
 }
 
 
@@ -226,7 +478,18 @@ fn remove_exec_banner() {
 }
 
 
+
+
 fn main() {
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() == 2 && args[1] == "--router" {
+        router();
+        exit(0);
+    }
+
+
+
     pretty_print(
         "Enter privileged mode",
         "Router>",
