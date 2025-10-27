@@ -2,14 +2,14 @@ use colored::Colorize;
 use std::env;
 use std::process::exit;
 
-fn pretty_print_cli_line(prompt: &str, command: &str) {
+fn pprint_cli_line(prompt: &str, command: &str) {
     println!("{} {}",
         prompt.yellow(),
         command.yellow().bold());
 }
 
 
-fn pretty_print_cli_line_with_comment(prompt: &str, command: &str, comment: &str) {
+fn pprint_cli_line_with_comment(prompt: &str, command: &str, comment: &str) {
     println!("{} {} {}",
         prompt.yellow(),
         command.yellow().bold(),
@@ -17,7 +17,7 @@ fn pretty_print_cli_line_with_comment(prompt: &str, command: &str, comment: &str
     );
 }
 
-fn pretty_print_comment(comment: &str) {
+fn pprint_comment(comment: &str) {
     println!("{}",
         comment.cyan().bold()
     );
@@ -25,7 +25,7 @@ fn pretty_print_comment(comment: &str) {
 
 
 
-fn pretty_print(comment: &str, prompt: &str, command: &str) {
+fn pprint(comment: &str, prompt: &str, command: &str) {
     println!("{}\n{} {}",
         comment.cyan().bold(),
         prompt.yellow(),
@@ -38,24 +38,69 @@ fn print_info_mask_format() {
         Please visit: https://www.calculator.net/ip-subnet-calculator.html")
 }
 
+
+
+fn router_ios_hierarchy() {
+    println!("\
+        IOS Router Hierarchy:\n\n\
+        +---------------------------+\n\
+        |        User EXEC          |\n\
+        +---------------------------+\n\
+        |     Privileged EXEC       |\n\
+        +---------------------------+\n\
+        |      Global Config        |\n\
+        +-----------+------+--------+\n\
+        | Interface | Line | Router |\n\
+        +-----------+------+--------+\n\
+    ");
+
+    pprint_comment("User EXEC mode (default mode after boot):");
+    pprint_cli_line("Router>", "");
+
+    pprint_comment("Enter Privileged EXEC mode (access to show and tests commands):");
+    pprint_cli_line("Router>", "enable");
+    pprint_cli_line("Router#", "");
+
+    pprint_comment("Enter Global Config mode:");
+    pprint_cli_line("Router#", "configure terminal");
+    pprint_cli_line("Router(config)#", "");
+
+    pprint_comment("Configure an interface:");
+    pprint_cli_line("Router(config)#", "interface <interf-name> <interf-number>");
+    pprint_cli_line("Router(config-if)#", "");
+
+
+    pprint_comment("Configure a console line:");
+    pprint_cli_line("Router(config)#", "line <line-name> <line-number>");
+    pprint_cli_line("Router(config-line)#", "");
+
+    pprint_comment("Configure a routing protocol:");
+    pprint_cli_line("Router(config)#", "router <routing-protocol-name>");
+    pprint_cli_line("Router(config-router)#", "");
+    println!();
+}
+
+
+
+
 fn add_default_gateway() {
-    pretty_print("Add default gateway", "Router(config)#", 
+    pprint("Add default gateway", "Router(config)#", 
         "ip route 0.0.0.0 0.0.0.0 <NEXT HOP>"
     );
 
     println!("Example (add default gateway via 192.168.10.2):");
-    pretty_print_cli_line("Router(config)#" ,"ip route 0.0.0.0 0.0.0.0 192.168.10.2");
+    pprint_cli_line("Router(config)#" ,"ip route 0.0.0.0 0.0.0.0 192.168.10.2");
 
 }
 
 fn add_static_route() {
-    pretty_print(
+    pprint(
         "Add static route",
         "Router(config)#",
         "ip route <DEST NETWORK> <DEST MASK> <NEXT HOP>");
 
     println!("Example (add route to 10.10.10.0/24 network via 192.168.10.2):");
-    pretty_print_cli_line("Router(config)#" ,"ip route 10.10.10.0 255.255.255.0 192.168.10.2");
+    pprint_cli_line("Router(config)#" ,"ip route 10.10.10.0 255.255.255.0 192.168.10.2");
     println!();
 
 }
@@ -69,40 +114,40 @@ fn roas() {
         "(Router on a Stick)".cyan().bold()
     );
 
-    pretty_print_cli_line("Router>", "enable");
-    pretty_print_cli_line("Router#", "configure terminal");
-    pretty_print_cli_line("Router(config)#" ,"interface <intf name>.<sub interface ID>");
-    pretty_print_cli_line("Router(config-subif)#", "encapsulation dot1Q <VLAN ID>");
-    pretty_print_cli_line("Router(config-subif)#", "ip address <IP> <MASK>");
-    pretty_print_cli_line("Router(config-subif)#", "exit");
-    pretty_print_cli_line("Router(config)", "interface <intf name>.<sub interface ID>");
-    pretty_print_cli_line("Router(config-subif)#", "encapsulation dot1Q <VLAN ID>");
-    pretty_print_cli_line("Router(config-subif)#", "ip address <IP> <MASK>");
-    pretty_print_cli_line("Router(config-subif)#","exit");
-    pretty_print_cli_line("Router(config)#", "interface <intf name>");
-    pretty_print_cli_line("Router(config-if)#", "no shutdown");
-    pretty_print_cli_line("Router(config-if)#", "exit");
-    pretty_print_cli_line("Router(config)#", "exit");
-    pretty_print_cli_line("Router#", "write");
-    pretty_print_cli_line("Router#", "exit");
+    pprint_cli_line("Router>", "enable");
+    pprint_cli_line("Router#", "configure terminal");
+    pprint_cli_line("Router(config)#" ,"interface <intf name>.<sub interface ID>");
+    pprint_cli_line("Router(config-subif)#", "encapsulation dot1Q <VLAN ID>");
+    pprint_cli_line("Router(config-subif)#", "ip address <IP> <MASK>");
+    pprint_cli_line("Router(config-subif)#", "exit");
+    pprint_cli_line("Router(config)", "interface <intf name>.<sub interface ID>");
+    pprint_cli_line("Router(config-subif)#", "encapsulation dot1Q <VLAN ID>");
+    pprint_cli_line("Router(config-subif)#", "ip address <IP> <MASK>");
+    pprint_cli_line("Router(config-subif)#","exit");
+    pprint_cli_line("Router(config)#", "interface <intf name>");
+    pprint_cli_line("Router(config-if)#", "no shutdown");
+    pprint_cli_line("Router(config-if)#", "exit");
+    pprint_cli_line("Router(config)#", "exit");
+    pprint_cli_line("Router#", "write");
+    pprint_cli_line("Router#", "exit");
 
     println!("Example {} (Router on a Stick):", "RoaS".green().bold());
-    pretty_print_cli_line("Router>", "enable");
-    pretty_print_cli_line("Router#", "configure terminal");
-    pretty_print_cli_line("Router(config)#" ,"interface gigabitEthernet 0/0/0.1");
-    pretty_print_cli_line("Router(config-subif)#", "encapsulation dot1Q 10");
-    pretty_print_cli_line("Router(config-subif)#", "ip address 10.10.10.1 255.255.255.0");
-    pretty_print_cli_line("Router(config-subif)#", "exit");
-    pretty_print_cli_line("Router(config)", "interface gigabitEthernet 0/0/0.20");
-    pretty_print_cli_line("Router(config-subif)#", "encapsulation dot1Q 2");
-    pretty_print_cli_line("Router(config-subif)#", "ip address 20.20.20.1 255.255.255.0");
-    pretty_print_cli_line("Router(config-subif)#","exit");
-    pretty_print_cli_line("Router(config)#", "interface gigabitEthernet 0/0/0");
-    pretty_print_cli_line("Router(config-if)#", "no shutdown");
-    pretty_print_cli_line("Router(config-if)#", "exit");
-    pretty_print_cli_line("Router(config)#", "exit");
-    pretty_print_cli_line("Router#", "write memory");
-    pretty_print_cli_line("Router#", "exit");
+    pprint_cli_line("Router>", "enable");
+    pprint_cli_line("Router#", "configure terminal");
+    pprint_cli_line("Router(config)#" ,"interface gigabitEthernet 0/0/0.1");
+    pprint_cli_line("Router(config-subif)#", "encapsulation dot1Q 10");
+    pprint_cli_line("Router(config-subif)#", "ip address 10.10.10.1 255.255.255.0");
+    pprint_cli_line("Router(config-subif)#", "exit");
+    pprint_cli_line("Router(config)", "interface gigabitEthernet 0/0/0.20");
+    pprint_cli_line("Router(config-subif)#", "encapsulation dot1Q 2");
+    pprint_cli_line("Router(config-subif)#", "ip address 20.20.20.1 255.255.255.0");
+    pprint_cli_line("Router(config-subif)#","exit");
+    pprint_cli_line("Router(config)#", "interface gigabitEthernet 0/0/0");
+    pprint_cli_line("Router(config-if)#", "no shutdown");
+    pprint_cli_line("Router(config-if)#", "exit");
+    pprint_cli_line("Router(config)#", "exit");
+    pprint_cli_line("Router#", "write memory");
+    pprint_cli_line("Router#", "exit");
 
 
 
@@ -119,56 +164,76 @@ fn gre() {
     println!("On Router 0:");
     println!("{} {}",
         "STEP 1:".cyan().bold(), "Create virtual tunnel interface:");
-    pretty_print_cli_line("R0(config)", "[int|interface] tunnel <NR>");
+    pprint_cli_line("R0(config)", "[int|interface] tunnel <NR>");
     println!("{} {}",
         "STEP 2:".cyan().bold(),
         "Assign tunnel IP and subnet:");
-    pretty_print_cli_line("R0(config-if)", "ip [a|addr|address] <TUNNEL_IP1> <TUNNEL_MASK>");
+    pprint_cli_line("R0(config-if)", "ip [a|addr|address] <TUNNEL_IP1> <TUNNEL_MASK>");
     println!("{} {}",
         "STEP 3:".cyan().bold(),
         "Use local physical interface as tunnel source:");
-    pretty_print_cli_line("R0(config-if)", "tunnel source <INTERFACE_NAME>");
+    pprint_cli_line("R0(config-if)", "tunnel source <INTERFACE_NAME>");
     println!("{} {}",
         "STEP 4:".cyan().bold(),
         "Define remote router’s IP (physical interface) as tunnel destination:");
-    pretty_print_cli_line("R0(config-if)", "tunnel destination <IP of R1>");
+    pprint_cli_line("R0(config-if)", "tunnel destination <IP of R1>");
    
     println!("On Router 1:");
     println!("{} {}",
         "STEP 1:".cyan().bold(),
         "Create virtual tunnel interface:");
-    pretty_print_cli_line("R1(config)", "[int|interface] tunnel <NR>");
+    pprint_cli_line("R1(config)", "[int|interface] tunnel <NR>");
     println!("{} {}",
         "STEP 2:".cyan().bold(),
         "Assign tunnel IP and subnet:");
-    pretty_print_cli_line("R1(config-if)", "ip [a|addr|address] <TUNNEL_IP2> <TUNNEL_MASK>");
+    pprint_cli_line("R1(config-if)", "ip [a|addr|address] <TUNNEL_IP2> <TUNNEL_MASK>");
     println!("{} {}",
         "STEP 3:".cyan().bold(),
         "Use local physical interface as tunnel source:");
-    pretty_print_cli_line("R1(config-if)", "tunnel source <INTERFACE_NAME>");
+    pprint_cli_line("R1(config-if)", "tunnel source <INTERFACE_NAME>");
     println!("{} {}",
         "STEP 4:".cyan().bold(),
         "Define remote router’s IP (physical interface) as tunnel destination:");
-    pretty_print_cli_line("R1(config-if)", "tunnel destination <IP of R0>");
+    pprint_cli_line("R1(config-if)", "tunnel destination <IP of R0>");
     println!();
    
     println!("Example:");
     println!("On Router 0:");
-    pretty_print_cli_line_with_comment("R0(config)", "interface tunnel 1", "                    ! Create GRE tunnel");
-    pretty_print_cli_line_with_comment("R0(config-if)", "ip address 50.50.50.1 255.255.255.0", "! Assign 1st IP on tunnel endpoint");
-    pretty_print_cli_line_with_comment("R0(config-if)", "tunnel source FastEthernet 0/0", "     ! Local interface");
-    pretty_print_cli_line_with_comment("R0(config-if)", "tunnel destination 20.0.0.1", "        ! Remote (physical) IP");
+    pprint_cli_line_with_comment("R0(config)", "interface tunnel 1", "                    ! Create GRE tunnel");
+    pprint_cli_line_with_comment("R0(config-if)", "ip address 50.50.50.1 255.255.255.0", "! Assign 1st IP on tunnel endpoint");
+    pprint_cli_line_with_comment("R0(config-if)", "tunnel source FastEthernet 0/0", "     ! Local interface");
+    pprint_cli_line_with_comment("R0(config-if)", "tunnel destination 20.0.0.1", "        ! Remote (physical) IP");
     println!("On Router 1:");
-    pretty_print_cli_line_with_comment("R1(config)", "interface tunnel 1", "                    ! Create GRE tunnel");
-    pretty_print_cli_line_with_comment("R1(config-if)", "ip address 50.50.50.2 255.255.255.0", "! Assign 2nd IP on tunnel endpoint");
-    pretty_print_cli_line_with_comment("R1(config-if)", "tunnel source FastEthernet 0/0", "     ! Local interface");
-    pretty_print_cli_line_with_comment("R1(config-if)", "tunnel destination 10.0.0.1", "        ! Remote (physical) IP");
+    pprint_cli_line_with_comment("R1(config)", "interface tunnel 1", "                    ! Create GRE tunnel");
+    pprint_cli_line_with_comment("R1(config-if)", "ip address 50.50.50.2 255.255.255.0", "! Assign 2nd IP on tunnel endpoint");
+    pprint_cli_line_with_comment("R1(config-if)", "tunnel source FastEthernet 0/0", "     ! Local interface");
+    pprint_cli_line_with_comment("R1(config-if)", "tunnel destination 10.0.0.1", "        ! Remote (physical) IP");
     println!("Learn more here: https://ipcisco.com/lesson/gre-tunnel-configuration-with-cisco-packet-tracer/");
+    println!();
+    println!("\
+        NOTE: Note all Packet Tracer routers support GRE\n\
+        - Cisco 1941
+        - Cisco 2901
+        - Cisco 2911
+        - Cisco 4321 (if available)
+        ");
+}
+
+
+
+fn save_config() {
+    pprint_cli_line("Router#", "write memory");
+    println!("\
+        Building configuration...\n\
+        [OK]\
+    ");
 }
 
 
 fn router() {
-    pretty_print("Display router's interfaces", 
+    router_ios_hierarchy();
+
+    pprint("Display router's interfaces", 
         "Router#",
         "[sh|show] ip [int|inter|interface] [br|brief]");
 
@@ -187,25 +252,25 @@ fn router() {
     ");
 
 
-    pretty_print_comment("Enter router's interface");
-    pretty_print_cli_line("Router(config)#", "[int|inter|interface] <interface name>");
+    pprint_comment("Enter router's interface");
+    pprint_cli_line("Router(config)#", "[int|inter|interface] <interface name>");
     println!("Example:");
-    pretty_print_cli_line("Router(config)#", "int FastEthernet1/0");
-    pretty_print_cli_line("Router(config)#", "int fa1/0");
-    pretty_print_cli_line("Router(config)#", "int GigabitEthernet0/1");
-    pretty_print_cli_line("Router(config)#", "int gig0/1");
+    pprint_cli_line("Router(config)#", "int FastEthernet1/0");
+    pprint_cli_line("Router(config)#", "int fa1/0");
+    pprint_cli_line("Router(config)#", "int GigabitEthernet0/1");
+    pprint_cli_line("Router(config)#", "int gig0/1");
     println!();
 
     
 
-    pretty_print(
+    pprint(
         "Assign IPv4 address",
         "Router(config-if)#",
         "ip [add|addr|address] <IP> <MASK>"
     );
 
     println!("Example (place 192.168.14.1/24):");
-    pretty_print_cli_line(
+    pprint_cli_line(
         "Router(config-if)#",
         "ip address 192.168.14.1 255.255.255.0");
     println!();
@@ -213,7 +278,7 @@ fn router() {
 
     println!();
 
-    pretty_print(
+    pprint(
         "Flush (remove) IP address", 
         "Router(config-if)# ",
         "no ip [add|addr|address]"
@@ -230,20 +295,66 @@ fn router() {
 
 
 
+fn switch_ios_hierarchy() {
+    println!("\
+        IOS Switch Hierarchy:\n\n\
+        +---------------------------+\n\
+        |        User EXEC          |\n\
+        +---------------------------+\n\
+        |     Privileged EXEC       |\n\
+        +---------------------------+\n\
+        |      Global Config        |\n\
+        +-----------+------+--------+\n\
+        | Interface | Line |  VLAN  |\n\
+        +-----------+------+--------+\n\
+    ");
+
+
+    pprint_comment("User EXEC mode (default mode after boot):");
+    pprint_cli_line("Switch>", "");
+
+    pprint_comment("Enter Privileged EXEC mode (access to show and tests commands):");
+    pprint_cli_line("Switch>", "enable");
+    pprint_cli_line("Switch#", "");
+
+    pprint_comment("Enter Global Config mode:");
+    pprint_cli_line("Switch#", "configure terminal");
+    pprint_cli_line("Switch(config)#", "");
+
+    pprint_comment("Configure an interface:");
+    pprint_cli_line("Switch(config)#", "interface <interf-name> <interf-number>");
+    pprint_cli_line("Switch(config-if)#", "");
+
+
+    pprint_comment("Configure a console line:");
+    pprint_cli_line("Switch(config)#", "line <line-name> <line-number>");
+    pprint_cli_line("Switch(config-line)#", "");
+
+    pprint_comment("Configure a VLAN:");
+    pprint_cli_line("Switch(config)#", "vlan <vlan-number>");
+    pprint_cli_line("Switch(config-vlan)#", "");
+
+    pprint_comment("Create management VLAN (assing IP on a virtual interface):");
+    pprint_cli_line("Switch(config)#", "interface vlan <vlan-number>");
+    pprint_cli_line("Switch(config-if)#", "ip address <ip-address> <subnet-mask>");
+    pprint_cli_line("Switch(config-if)#", "no shutdown");
+}
+
+
 fn add_vlan() {
-    pretty_print_comment("Add VLAN:");
-    pretty_print_cli_line("Switch(config)#", "vlan <ID>");
-    pretty_print_cli_line("Switch(config-vlan)#", "exit");
-    pretty_print_cli_line("Switch(config)#", "");
+    pprint_comment("Add VLAN:");
+    pprint_cli_line("Switch(config)#", "vlan <ID>");
+    pprint_cli_line("Switch(config-vlan)#", "exit");
+    pprint_cli_line("Switch(config)#", "");
     println!("Example:");
-    pretty_print_cli_line("Switch(config)#", "vlan 10");
-    pretty_print_cli_line("Switch(config-vlan)#", "exit");
+    pprint_cli_line("Switch(config)#", "vlan 10");
+    pprint_cli_line("Switch(config-vlan)#", "exit");
 
 }
 
 
 fn show_vlan() {
-    pretty_print("", "Switch#", "[sh|show] vlan");
+    pprint("", "Switch#", "[sh|show] vlan");
     println!("\
         VLAN Name                             Status    Ports \n\
         ---- -------------------------------- --------- -------------------------------\n
@@ -280,7 +391,7 @@ fn show_vlan() {
 
 
 fn show_vlan_brief() {
-    pretty_print("", "Switch#", "[sh|show] vlan [br|brief]");
+    pprint("", "Switch#", "[sh|show] vlan [br|brief]");
     println!("\
         VLAN Name                             Status    Ports\n\
         ---- -------------------------------- --------- -------------------------------\n\
@@ -298,13 +409,13 @@ fn show_vlan_brief() {
 
 
 fn config_access_port() {
-    pretty_print_cli_line("Switch(config)#", "Switch(config)# [int|inter|interface] <interface name>");
-    pretty_print_comment("Set port type (access/trunk):");
-    pretty_print_cli_line("Switch(config-if)#", "switchport mode access");
-    pretty_print_comment("Set VLAN ID:");
-    pretty_print_cli_line("Switch(config-if)#", "switchport access vlan <VLAN-ID>");
+    pprint_cli_line("Switch(config)#", "Switch(config)# [int|inter|interface] <interface name>");
+    pprint_comment("Set port type (access/trunk):");
+    pprint_cli_line("Switch(config-if)#", "switchport mode access");
+    pprint_comment("Set VLAN ID:");
+    pprint_cli_line("Switch(config-if)#", "switchport access vlan <VLAN-ID>");
     println!("Example:");
-    pretty_print_cli_line("Switch(config-if)#", "switchport access vlan 10");
+    pprint_cli_line("Switch(config-if)#", "switchport access vlan 10");
     println!();
     println!("\
         NOTE: Without the first command `switchport mode access`, the port will stay in dynamic desirable mode, meaning:\n\
@@ -318,7 +429,7 @@ fn config_access_port() {
 
 
 fn config_trunk_port() {
-    pretty_print_cli_line("Switch#", "[sh|show] ip [int|interface] [br|brief]");
+    pprint_cli_line("Switch#", "[sh|show] ip [int|interface] [br|brief]");
     println!("\
         Interface              IP-Address      OK? Method Status                Protocol\n\
         FastEthernet0/1        unassigned      YES manual down                  down \n\
@@ -327,16 +438,16 @@ fn config_trunk_port() {
         FastEthernet3/1        unassigned      YES manual down                  down \n\
         Vlan1                  unassigned      YES manual administratively down down\n\
     ");
-    pretty_print_cli_line("Switch#", "[conf|config] [t|term|terminal]");
-    pretty_print_cli_line("Switch(config)#", "Switch(config)# [int|inter|interface] <interface name>");
-    pretty_print_comment("Set port type (access/trunk):");
-    pretty_print_cli_line("Switch(config-if-range)#", "switchport mode trunk");
+    pprint_cli_line("Switch#", "[conf|config] [t|term|terminal]");
+    pprint_cli_line("Switch(config)#", "Switch(config)# [int|inter|interface] <interface name>");
+    pprint_comment("Set port type (access/trunk):");
+    pprint_cli_line("Switch(config-if-range)#", "switchport mode trunk");
     println!("NOTE: trunk VLAN must be configured at both ends of a link");
 }
 
 
 fn config_multiple_trunk_ports() {
-    pretty_print_cli_line("Switch#", "[sh|show] ip [int|interface] [br|brief]");
+    pprint_cli_line("Switch#", "[sh|show] ip [int|interface] [br|brief]");
     println!("\
         Interface              IP-Address      OK? Method Status                Protocol\n\
         FastEthernet0/1        unassigned      YES manual down                  down \n\
@@ -345,20 +456,20 @@ fn config_multiple_trunk_ports() {
         FastEthernet3/1        unassigned      YES manual down                  down \n\
         Vlan1                  unassigned      YES manual administratively down down\n\
     ");
-    pretty_print_cli_line("Switch#", "[conf|config] [t|term|terminal]");
-    pretty_print_cli_line("Switch(config)#", "Switch(config)# interface range fa0/1 - fa4/1");
-    pretty_print_comment("Set port type (access/trunk):");
-    pretty_print_cli_line("Switch(config-if-range)#", "switchport mode trunk");
+    pprint_cli_line("Switch#", "[conf|config] [t|term|terminal]");
+    pprint_cli_line("Switch(config)#", "Switch(config)# interface range fa0/1 - fa4/1");
+    pprint_comment("Set port type (access/trunk):");
+    pprint_cli_line("Switch(config-if-range)#", "switchport mode trunk");
     println!("NOTE: trunk VLAN must be configured at both ends of a link");
 }
 
 fn config_native_vlan() {
-    pretty_print_comment("Configure native VLAN:");
-    pretty_print_cli_line("Switch(config)#", "[int|interface] <interface name>");
-    pretty_print_cli_line("Switch(config-if)#", "switchport trunk native vlan <ID>");
+    pprint_comment("Configure native VLAN:");
+    pprint_cli_line("Switch(config)#", "[int|interface] <interface name>");
+    pprint_cli_line("Switch(config-if)#", "switchport trunk native vlan <ID>");
     println!("Example:");
-    pretty_print_cli_line("Switch(config)#", "[int|interface] FastEthernet 0/1");
-    pretty_print_cli_line("Switch(config-if)#", "switchport trunk native vlan 30");
+    pprint_cli_line("Switch(config)#", "[int|interface] FastEthernet 0/1");
+    pprint_cli_line("Switch(config-if)#", "switchport trunk native vlan 30");
 
     println!("NOTE:\n\
         - A native VLAN is a placed on trunk line, so that line will remove 802.1Q of the specified VLAN\n\
@@ -369,19 +480,19 @@ fn config_native_vlan() {
 
 
 fn management_vlan_interface() {
-    pretty_print_comment("Create a separate ID for management VLAN:");
-    pretty_print_cli_line("Switch(config)#", "vlan <ID>");
-    pretty_print_cli_line("Switch(config-vlan)#", "exit");
-    pretty_print_cli_line("Switch(config)#", "");
-    pretty_print_comment("Assign IP address on management VLAN interface:");
-    pretty_print_cli_line("Switch(config)#", "interface vlan <ID>");
-    pretty_print_cli_line("Switch(config-if)#", "ip address <IP> <MASK>");
+    pprint_comment("STEP 1: Create a new VLAN, for management:");
+    pprint_cli_line("Switch(config)#", "vlan <ID>");
+    pprint_cli_line("Switch(config-vlan)#", "exit");
+    pprint_cli_line("Switch(config)#", "");
+    pprint_comment("STEP 2: Assign IP address on management VLAN interface:");
+    pprint_cli_line("Switch(config)#", "interface vlan <ID>");
+    pprint_cli_line("Switch(config-if)#", "ip address <IP> <MASK>");
     println!();
     println!("Example:");
-    pretty_print_cli_line("Switch(config)#", "vlan 101");
-    pretty_print_cli_line("Switch(config-vlan)#", "exit");
-    pretty_print_cli_line("Switch(config)#", "interface vlan 101");
-    pretty_print_cli_line("Switch(config-if)#", "ip address 10.10.10.99 255.255.255.0");
+    pprint_cli_line("Switch(config)#", "vlan 101");
+    pprint_cli_line("Switch(config-vlan)#", "exit");
+    pprint_cli_line("Switch(config)#", "interface vlan 101");
+    pprint_cli_line("Switch(config-if)#", "ip address 10.10.10.99 255.255.255.0");
 
     println!();
     println!(
@@ -395,18 +506,16 @@ fn management_vlan_interface() {
 
 
 fn remove_vlan() {
-    pretty_print_comment("Remove a VLAN (by ID):");
-    pretty_print_cli_line("Switch(config)#", "no vlan <ID>");
+    pprint_comment("Remove a VLAN (by ID):");
+    pprint_cli_line("Switch(config)#", "no vlan <ID>");
     println!("Example:");
-    pretty_print_cli_line("Switch(config)#", "no vlan 10");
+    pprint_cli_line("Switch(config)#", "no vlan 10");
 }
 
 
 
-
-
-
 fn switch() {
+    switch_ios_hierarchy();
     add_vlan();
     show_vlan();
     show_vlan_brief();
@@ -421,14 +530,14 @@ fn switch() {
 
 
 fn add_motd_banner() {
-    pretty_print_comment("Add MOTD (Message Of The Day) banner: will appear after equipement boots");
-    pretty_print_cli_line("Router(config)#", "banner motd # ... your text goes here ... #");
+    pprint_comment("Add MOTD (Message Of The Day) banner: will appear after equipement boots");
+    pprint_cli_line("Router(config)#", "banner motd # ... your text goes here ... #");
     println!("Don't forget to save the config:");
-    pretty_print_cli_line("Router#", "write");
+    pprint_cli_line("Router#", "write");
 
     println!("Examples:");
-    pretty_print_cli_line("Router(config)", "banner motd # ACCESS LIMITED TO AUTHORIZED PERSONNEL ONLY #");
-    pretty_print_cli_line("Router(config)", "banner motd #\n\
+    pprint_cli_line("Router(config)", "banner motd # ACCESS LIMITED TO AUTHORIZED PERSONNEL ONLY #");
+    pprint_cli_line("Router(config)", "banner motd #\n\
         WARNING!\n\
         ACCESS IS LIMITED ONLY TO AUTHORIZED PERSONNEL!\n\
         KEEP OUT!\n\
@@ -445,24 +554,24 @@ fn add_motd_banner() {
 
 
 fn remove_motd_banner() {
-    pretty_print_comment("Remove MOTD (Message Of The Day) banner: will no longer appear after equipement boots");
-    pretty_print_cli_line("Router(config)#", "no banner motd");
+    pprint_comment("Remove MOTD (Message Of The Day) banner: will no longer appear after equipement boots");
+    pprint_cli_line("Router(config)#", "no banner motd");
     println!("Don't forget to save the config:");
-    pretty_print_cli_line("Router#", "write");
+    pprint_cli_line("Router#", "write");
 }
 
 
 
 fn add_exec_banner() {
-    pretty_print_comment("Add EXEC banner: will appear after entering privileged (EXEC) mode");
+    pprint_comment("Add EXEC banner: will appear after entering privileged (EXEC) mode");
 
     println!("Examples:");
-    pretty_print_cli_line("Router(config)", "banner exec #\n\
+    pprint_cli_line("Router(config)", "banner exec #\n\
         WARNING!\n\
         PROCEED WITH CATION!\n\
         ALL ACTIVITY IS LOGGED AND REPORTED!\n\
         #");
-    pretty_print_cli_line("Router(config)", "banner exec # PROCEED WITH CAUTION! #");
+    pprint_cli_line("Router(config)", "banner exec # PROCEED WITH CAUTION! #");
     println!(
         "Result:\n\
         Router> en\n\
@@ -471,10 +580,10 @@ fn add_exec_banner() {
 }
 
 fn remove_exec_banner() {
-    pretty_print_comment("Remove EXEC banner: will no longer appear after entering privileged (EXEC) mode");
-    pretty_print_cli_line("Router(config)#", "no banner exec");
+    pprint_comment("Remove EXEC banner: will no longer appear after entering privileged (EXEC) mode");
+    pprint_cli_line("Router(config)#", "no banner exec");
     println!("Don't forget to save the config:");
-    pretty_print_cli_line("Router#", "write");
+    pprint_cli_line("Router#", "write");
 }
 
 
@@ -490,14 +599,14 @@ fn main() {
 
 
 
-    pretty_print(
+    pprint(
         "Enter privileged mode",
         "Router>",
         "[en|enable]");
     println!();
 
 
-    pretty_print(
+    pprint(
         "Configure terminal",
         "Router#",
         "[conf|config] [t|terminal]");
@@ -513,7 +622,7 @@ fn main() {
     println!();
 
 
-    pretty_print("Disable DNS resolution",
+    pprint("Disable DNS resolution",
             "Device(config)# ",
         "no ip domain-lookup");
     println!();
