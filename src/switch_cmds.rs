@@ -213,6 +213,40 @@ pub fn management_vlan_interface() {
 }
 
 
+pub fn voice_vlan() {
+    println!("{} {}{}",
+        "Configure".cyan().bold(),
+        "voice VLAN".green().bold(),
+        ":".cyan().bold());
+    pprint_cli_line("Switch(config)#", "interface <interface_name>");
+    pprint_cli_line("Switch(config-if)#", "mls qos trust cos");
+    pprint_cli_line("Switch(config-if)#", "switchport voice vlan <VLAN_ID>");
+    println!("{} {} {}",
+        "Commands to verify ".cyan().bold(),
+        "voice VLAN".green().bold(),
+        "was applied:".cyan().bold());
+    pprint_cli_line("Switch#", "show mls qos interface <interface_name>");
+    pprint_cli_line("Switch#", "show interface <interface_name> switchport");
+    println!("{} {}",
+        "Voice VLAN".green().bold(),
+        "can be configured on an access port (VLAN of data);".cyan().bold());
+    pprint_comment("it cannot be used on a trunk port:");
+    pprint_cli_line("Switch(config)#", "vlan 20");
+    pprint_cli_line("Switch(config-vlan)#", "name student");
+    pprint_cli_line("Switch(config-vlan)#", "exit");
+    pprint_cli_line("Switch(config)#", "vlan 150");
+    pprint_cli_line("Switch(config-vlan)#", "name voice");
+    pprint_cli_line("Switch(config-vlan)#", "exit");
+    pprint_cli_line("Switch(config)#", "interface Fa0/1");
+    pprint_cli_line("Switch(config-if)#", "switchport mode access");
+    pprint_cli_line("Switch(config-if)#", "switchport access vlan 20");
+    pprint_cli_line("Switch(config-if)#", "mls qos trust cos");
+    pprint_cli_line("Switch(config-if)#", "switchport voice vlan 150");
+    println!();
+
+}
+
+
 
 pub fn remove_vlan() {
     pprint_comment("Remove a VLAN (by ID):");
@@ -220,6 +254,8 @@ pub fn remove_vlan() {
     println!("Example:");
     pprint_cli_line("Switch(config)#", "no vlan 10");
 }
+
+
 
 
 
@@ -233,5 +269,6 @@ pub fn switch() {
     config_multiple_trunk_ports();
     config_native_vlan();
     management_vlan_interface();
+    voice_vlan();
     remove_vlan();
 }
